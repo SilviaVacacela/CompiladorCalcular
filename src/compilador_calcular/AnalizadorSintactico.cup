@@ -1,0 +1,67 @@
+/*­­­­Sección de declaraciones package e imports­­­­­­­­­*/
+package compilador_calcular;
+import java_cup.runtime.*;
+/*­­­­ Sección componentes de código de usuario ­­­­*/
+parser code {:
+/*­­­­ Método para controlar los errores ­­­­*/
+  public void report_error(String message, Object info) {
+    StringBuffer m = new StringBuffer("Error");
+    System.out.println("Mensaje: "+message);
+    System.out.println("info: "+info.toString());
+    if(info instanceof java_cup.runtime.Symbol) {
+    java_cup.runtime.Symbol s=((java_cup.runtime.Symbol)info);
+    /* Comprueba si el numero de línea es mayor o igual que cero */
+    System.out.println(s);   
+    if(s.left >= 0) {
+    m.append(" en linea "+(s.left+1));
+    /*Comprueba si el numero de columna es mayoro igual que cero */
+    if (s.right >= 0)
+        m.append(", y columna "+(s.right+1));
+    }
+    /*­­­­ Sección para controlar los errores­­­­*/
+    if( info.toString().equals("#0") ){
+      System.out.println("Revise que tenga el FIN DE LINEA, letra P o letra A");
+    }
+    if( info.toString().equals("#2") ){
+       System.out.println("Revise que exista un NÚMERO antes del fin de linea(A)");
+    }
+    if( info.toString().equals("#3") ){
+      System.out.println("Revise que exista un NÚMERO antes del fin de linea(P)");
+    }
+    if( info.toString().equals("#4") ){
+      System.out.println("Revise que exista un NÚMERO antes del puntocoma");
+    }
+    if( info.toString().equals("#5") ){
+    System.out.println("Ingrese dos NÚMERO separados por puntocoma,seguido P o A");
+    }
+    }
+    m.append(" : "+message); 
+    System.err.println(m);
+    }
+    /*­­­­ Método para calcular el área o perímetro­­­­*/
+    public void conversion(String a, Double b,Double h){
+        Double r=0.0; 
+        String result="";
+	System.out.print("base"+b +";");    System.out.print("altura"+h +";");	
+	if (a=="A"){ r=b*h; result="area"; }
+	else if (a=="P"){ r=(2*b)+(2*h); result="perimetro"; }
+	System.out.print(" El"+result+" es: "+r);	
+    }
+:};
+
+/*­­­Declaración de la lista de símbolos de la gramática ­­­*/
+
+terminal  A, P,PUNTOCOMA;
+terminal Double NUMBER;
+non terminal Object programa, linea, medida;
+
+/* ­­­­­­­­­­­­­­ Declaración de la gramática  ­­­­­­­­­ */
+programa ::= programa linea | linea;
+
+linea ::= NUMBER:b PUNTOCOMA NUMBER:h medida:m  
+        {: parser.conversion(m.toString(), b,h);
+ 	System.out.println(m); :} ;
+medida ::= A {: RESULT="A"; :} | P {: RESULT="P"; :};
+
+
+
